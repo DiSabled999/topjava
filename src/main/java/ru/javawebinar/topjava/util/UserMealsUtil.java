@@ -34,16 +34,14 @@ public class UserMealsUtil {
         Map<LocalDate,Integer> calToThisDay = new HashMap<>();
         for(UserMeal userMeal : mealList) {
             LocalDate mealDate = userMeal.getDateTime().toLocalDate();
-            Integer mealCalories = calToThisDay.get(mealDate);
-            if(mealCalories == null) calToThisDay.put(mealDate,userMeal.getCalories());
-            else calToThisDay.put(mealDate,mealCalories += userMeal.getCalories());
+            calToThisDay.put(mealDate,calToThisDay.getOrDefault(mealDate,0)+userMeal.getCalories());
         }
 
         List<UserMealWithExceed> resultList = new ArrayList<>();
         for(UserMeal userMeal : mealList) {
             LocalTime mealTime = userMeal.getDateTime().toLocalTime();
-            LocalDate mealDate = userMeal.getDateTime().toLocalDate();
             if(startTime.isBefore(mealTime) && endTime.isAfter(mealTime)) {
+                LocalDate mealDate = userMeal.getDateTime().toLocalDate();
                 boolean exceed = calToThisDay.get(mealDate) > caloriesPerDay;
                 resultList.add(new UserMealWithExceed(userMeal.getDateTime(),userMeal.getDescription(),userMeal.getCalories(),exceed));
             }
